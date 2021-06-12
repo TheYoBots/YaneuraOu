@@ -24,32 +24,9 @@ jobs:
           - YANEURAOU_ENGINE_NNUE_KP256
           - YANEURAOU_ENGINE_KPPT
           - YANEURAOU_ENGINE_KPP_KKPT
-          - YANEURAOU_ENGINE_MATERIAL*
-          - USER_ENGINE
         compiler: [g++-8]
-        target: ["normal,tournament", gensfen, evallearn]
+        target: ["normal,tournament"]
         archcpu: ["SSE42"]
-        exclude:
-          # 以下のエディションには機械学習の実装が存在しない
-          # There is no machine learning implementation for the following editions
-          - edition: YANEURAOU_ENGINE_MATERIAL*
-            target: evallearn
-          - edition: USER_ENGINE
-            target: evallearn
-          # 以下のエディションはgensfenに対応しない
-          - edition: USER_ENGINE
-            target: gensfen
-          # Ubuntu-20.04 g++-10 は archcpu ZEN3,AVXVNNI のサポートを行わない
-          # ubuntu-20.04 g++-10 will not support the archcpu ZEN3,AVXVNNI
-          # `-march=cascadelake`: LLVM8, GCC9 support (AVX512VNNI)
-          # `-march=znver2`: LLVM9, GCC9 support
-          # `-march=alderlake` : LLVM12, GCC11 support (AVX-VNNI)
-          # `-march=znver3`: LLVM12, GCC11? support
-          - compiler: g++-8
-            archcpu: "ZEN3,AVXVNNI"
-          # Linux 32bit archcpu 向けのビルドは通常はしない
-          # don't usually build for Linux 32bit archcpu
-          - archcpu: NO_SSE
 
     steps:
       - name: Checkout own repository
