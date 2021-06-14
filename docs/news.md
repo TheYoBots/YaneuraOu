@@ -70,7 +70,7 @@ For those who want to study the search department of shogi software, study the d
 
 - Run a thinking engine on AWS and start using it from Nopaso: [Before buying a new laptop for shogi software](http://yaneuraou.yaneu.com/2018/11/28/%E5%B0%86%E6%A3%8B%E3%82%BD%E3%83%95%E3%83%88%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AB%E3%83%8E%E3%83%BC%E3%83%88pc%E3%82%92%E8%B2%B7%E3%81%84%E5%A4%89%E3%81%88%E3%82%8B%E5%89%8D%E3%81%AB/)
 - How to compile on Ubuntu on the AWS side: [How can computer shogi developers run machine learning on AWS?](http://yaneuraou.yaneu.com/2017/11/05/%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%82%BF%E5%B0%86%E6%A3%8B%E9%96%8B%E7%99%BA%E8%80%85%E3%81%8Caws%E3%81%A7%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92%E3%82%92%E5%9B%9E%E3%81%99%E3%81%AB/)
-  - [Instructions.txt](%E8%A7%A3%E8%AA%AC.txt) explains how to compile on Ubuntu.
+  - [Explaination.txt](%E8%A7%A3%E8%AA%AC.txt) explains how to compile on Ubuntu.
 - How to use the thinking engine via ssh: [How to deploy the thinking engine on AWS and use it via ssh](http://yaneuraou.yaneu.com/2019/06/17/aws%E3%81%AB%E6%80%9D%E8%80%83%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6ssh%E7%B5%8C%E7%94%B1%E3%81%A7%E4%BD%BF%E3%81%86%E6%96%B9%E6%B3%95/)
 
 ## Search
