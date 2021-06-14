@@ -7,67 +7,61 @@
 
 # About this project
 
-YaneuraOu is the World's Strongest Shogi engine(AI player) , WCSC29 1st winner , educational and USI compliant engine.
+YaneuraOu is the World's Strongest Shogi engine(AI player), WCSC29 1st winner, educational and USI compliant engine.
 
-やねうら王は、将棋の思考エンジンとして世界最強で、WCSC29(世界コンピュータ将棋選手権/2019年)において優勝しました。教育的でUSIプロトコル準拠の思考エンジンです。
+# Notice
 
+2019/05/05 We participated in WCSC29 (World Computer Shogi Championship / 2019) as "YaneuraOu with Otafuku Lab 2019" and won the championship. (WCSC first participation, victory) For the next year, I will call myself the strongest in the world. (｀･ω･´)ｂ
+- [WCSC29 YaneuraOu won the championship!](http://yaneuraou.yaneu.com/2019/05/06/wcsc29%E3%80%81%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B%E5%84%AA%E5%8B%9D%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%EF%BC%81/)
 
-# お知らせ
+# YaneuraOu Engine Tournament Results
 
-2019/05/05 WCSC29(世界コンピュータ将棋選手権/2019年)に『やねうら王 with お多福ラボ2019』として出場し、見事優勝を果たしました。(WCSC初参加、優勝)　このあと一年間は世界最強を名乗ります。(｀･ω･´)ｂ
-- [WCSC29、やねうら王優勝しました！](http://yaneuraou.yaneu.com/2019/05/06/wcsc29%E3%80%81%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B%E5%84%AA%E5%8B%9D%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F%EF%BC%81/)
+- 2017 World Computer Shogi Championship (WCSC27) "elmo" championship
+- 2017 5th Shogi Den-O Tournament (SDT5) "Heisei Shogi Battle Pompoko" Winner
+- 2018 World Computer Shogi Championship (WCSC28) "Hefeweizen" Winner
+- Winner of the 2019 World Computer Shogi Championship (WCSC29) "YaneuraOu with Otafuku Lab 2019".
+  - All the top eight teams in the final have adopted YaneuraOu's thinking engine.
 
+# About how to use YaneuraOu
 
-# やねうら王エンジンの大会での戦績
+  - Setup procedure: [YaneuraOu setup question thread](http://yaneuraou.yaneu.com/2017/05/04/%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B-%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97%E8%B3%AA%E5%95%8F%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89/)
+  - Description of engine options: [docs/USIextensioncommand.txt](docs/USI%E6%8B%A1%E5%BC%B5%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89.txt)
+  - Technical documents such as evaluation function learning commands, book generation commands, build methods, etc.: [docs/Explanation.txt](/docs/%E8%A7%A3%E8%AA%AC.txt)
 
-- 2017年 世界コンピュータ将棋選手権(WCSC27) 『elmo』優勝
-- 2017年 第5回将棋電王トーナメント(SDT5) 『平成将棋合戦ぽんぽこ』優勝
-- 2018年 世界コンピュータ将棋選手権(WCSC28) 『Hefeweizen』優勝
-- 2019年 世界コンピュータ将棋選手権(WCSC29) 『やねうら王 with お多福ラボ2019』優勝。
-  - 決勝の上位8チームすべてがやねうら王の思考エンジンを採用。
+# Currently ongoing subprojects
 
+## YaneuraOu Engine (YaneuraOu with Otafuku Lab 2019)
 
-# やねうら王の使い方について
+We will continue to improve this engine section in 2019.
 
-  - セットアップ手順 : [やねうら王 セットアップ質問スレッド](http://yaneuraou.yaneu.com/2017/05/04/%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B-%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97%E8%B3%AA%E5%95%8F%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89/)
-  - エンジンオプションの解説 : [docs/USI拡張コマンド.txt](docs/USI%E6%8B%A1%E5%BC%B5%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89.txt)
-  - 評価関数の学習コマンド、定跡の生成コマンド、ビルド方法等の技術的文書 : [docs/解説.txt](/docs/%E8%A7%A3%E8%AA%AC.txt)
+## YaneuraOu Tsume Shogi solver
 
+Under development by tanuki: A solver that can solve the length of Tsume Shogi.
 
-# 現在進行中のサブプロジェクト
+# Past subprojects
 
-## やねうら王エンジン (やねうら王 with お多福ラボ 2019)
+Click here for past sub-projects such as YaneuraOu nano, mini, classic, Ote Shogi, Toru Ichite Shogi, Cooperative Solver, and Continuous Self-Competition Framework.
 
-2019年も引き続き、このエンジン部を改良していきます。
+- [Past subprojects](/docs/README2017.md)
 
-## やねうら王詰め将棋solver
+# YaneuraOu evaluation function file
 
-《tanuki-さんが開発中》 長手数の詰将棋が解けるsolverです。
+- YaneuraOu 2018 KPPT type --Apery (WCSC26), Apery (SDT4) = "Floating Se" evaluation function binary can be used as it is.
+- YaneuraOu 2018 KPP_KKPT type --You can use the one in the evaluation function for KPP_KKPT type build of the [past subproject](/docs/README2017.md).
+- YaneuraOu 2018 NNUE type --tanuki- (SDT5, WCSC28, WCSC29), NNUEkai and other evaluation functions can be used.
 
-# 過去のサブプロジェクト
+# YaneuraOu News
 
-過去のサブプロジェクトである、やねうら王nano , mini , classic、王手将棋、取る一手将棋、協力詰めsolver、連続自己対戦フレームワークなどはこちらからどうぞ。
+It is a list of headlines of related articles written on the official blog of YaneuraOu. You can also find explanations of each engine option, download a book file, and how to generate a book.
 
-- [過去のサブプロジェクト](/docs/README2017.md)
+  - [YaneuraOu News Table of Contents List](docs/news.md)
 
-# やねうら王評価関数ファイル
+# For developers participating in the WCSC (World Computer Shogi Championship)
 
-- やねうら王2018 KPPT型 - Apery(WCSC26)、Apery(SDT4)＝「浮かむ瀬」の評価関数バイナリがそのまま使えます。
-- やねうら王2018 KPP_KKPT型 - [過去のサブプロジェクト](/docs/README2017.md)のKPP_KKPT型ビルド用評価関数のところにあるものが使えます。
-- やねうら王2018 NNUE型 - tanuki-(SDT5,WCSC28,WCSC29),NNUEkaiなどの評価関数が使えます。
+If you participate using YaneuraOu as a library, you can use all the files on GitHub of YaneuraOu and all the files directly linked from this top page.
 
-# やねうら王 ニュース
+# License
 
-やねうら王公式ブログに書いた関連記事の見出し一覧です。各エンジンオプションの解説、定跡ファイルのダウンロード、定跡の生成手法などもこちらにあります。
+Many parts of the source code of the YaneuraOu project use Stockfish as it is, and some parts refer to Apery/Silent Majority, so the YaneuraOu project follows the license (GPLv3) of those projects. Will do.
 
-  - [やねうら王ニュース目次一覧](docs/news.md)
-
-# WCSC(世界コンピュータ将棋選手権)に参加される開発者の方へ
-
-やねうら王をライブラリとして用いて参加される場合、このやねうら王のGitHub上にあるすべてのファイルおよび、このトップページから直リンしているファイルすべてが使えます。
-
-# ライセンス
-
-やねうら王プロジェクトのソースコードはStockfishをそのまま用いている部分が多々あり、Apery/SilentMajorityを参考にしている部分もありますので、やねうら王プロジェクトは、それらのプロジェクトのライセンス(GPLv3)に従うものとします。
-
-「リゼロ評価関数ファイル」については、やねうら王プロジェクトのオリジナルですが、一切の権利は主張しませんのでご自由にお使いください。
+The "Rezero Evaluation Function File" is the original of the YaneuraOu Project, but we do not claim any rights, so please feel free to use it.
