@@ -1,0 +1,816 @@
+
+USI protocol proprietary extension command
+ 
+ 
+■ USI options related
+ 
+ 
+・ Abbreviated expression of set option
+ 
+ > Threads 1
+ When specified as
+ > setoption name Threads value 1
+Is equivalent to. The option name ignores case, so
+ > threads 1
+ You can also write like this.
+ 
+ Also,
+ > evalshare true
+ Can be written in all lowercase letters like
+ > evalshare True
+ It is not possible to use uppercase letters for the setting value as in.
+ 
+ 
+-List of option items that can be set with set option name XXX value ...
+ 
+ 
+ Below is a list of option items that can be set with the set option command.
+ 
+ 
+ Threads: Number of threads to think about
+ 
+ USI_Hash: Substitution table size (unit [MB])
+ 
+ This value is the memory of the OS if the replacement table usage exceeds 50% with a long time.
+ The larger the value you allow, the better the search efficiency and the stronger it should be.
+ 
+ 　Considering support for over 128GB.
+// If you define USE_HUGE_HASH in config.h and compile it, you can use a replacement table over 128GB. Disabled by default.
+ 
+ * From V4.83, there is no restriction that the value specified here should be a power of 2.
+ * Currently, even if you specify only up to 131072 (= 128 * 1024, that is, 128GB), it will not be used well.
+ 
+ * Until V4.89, it was "Hash" instead of "USI_Hash".
+ This is a shogi place, and when playing engines against each other, USI_Hash is common to both engines.
+ Because only the value could be set.
+ 
+ However, with the version upgrade of Shogisho, it became possible to set the value of USI_Hash individually.
+ Based on the USI draft, "USI_Hash" is adopted.
+ 
+ 
+ USI_Ponder: ponder (thinking in the other party's turn) on / off
+ 
+ Stochastic_Ponder:
+ By thinking in the previous phase (opposite number) when pondering with go ponder
+ All moves are searched from there, so there is no loss of ponder.
+ // The one who is dlshogi.
+ If this is enabled, the reading line of the GUI will be strange because you are thinking in the phase just before the ponder (opposite number).
+ // It would be nice if the GUI side had a function that made me think with the go command in the situation just before that when it was the other party's turn.
+ 
+ WriteDebugLog: Redirects standard I / O to a file ("io_log.txt") (can be turned on with the log command)
+ 
+ NetworkDelay: Average delay time during communication [ms]
+ If you set this to 200, for example, you will be able to point in 4.8 seconds (200ms earlier) instead of pointing in 5.0 seconds.
+ NetworkDelay2: Maximum replacement time during communication [ms]
+ If this is set to 600, for example, the countdown will be 10 seconds, and if it runs out, the move will be returned to 9.4 seconds (600ms earlier) only at the moment of losing.
+ It is recommended to set this value to about 1200 (1.2 seconds earlier) when playing on a server that sometimes has a large delay such as floodgate.
+ 
+ SlowMover: Early stage emphasis rate [%]
+Adjust the thinking time when losing. Early stage emphasis rate. It is a percentage.
+ For example, if you specify 200, you will think 200% (twice) of the original optimal time.
+ It can be set short when interpersonal and forced to point quickly.
+ 
+ DrawValueBlack: The score at the time of the draw when the search start phase is the first move.
+ DrawValueWhite: The score at the time of the draw when it is the second turn (the search start phase).
+ 
+ In YaneuraOu, the unit is specified by cp (step is 100).
+In Fukaura King, the unit is specified as 1000 times the winning percentage (per mille). 0-1000.
+ 
+ For example, in YaneuraOu, if this is -100, the draw phase is considered to be -100.
+ (If you think that the score is equal (evaluation value is 0), choose another move without choosing a draw)
+The default value for this value is -2. This makes it easier to avoid Sennichite.
+ (If it is -1, it will be truncated by internal calculation and treated as 0, so it has no effect.)
+ 
+ Example) In YaneuraOu, when DrawValueBlack = -100 and the search start phase is the first move,
+ The search is performed by regarding the draw phase as -100 if it is the first phase and +100 if it is the second phase.
+ 
+ 
+ EvalDir: Placement folder for evaluation function files (eval / by default)
+ Since the evaluation function file is read with the isready command, it will not work unless this setting is changed with setoption before isready after startup.
+ 
+ EnteringKingRule: jishogi rule
+ NoEnteringKing: No jishogi rules
+ CSARule27: 27-point method (CSA rule)
+CSARule24: 24-point method. Since you win the declaration with 31 points, you will not win the declaration unless you reach 31 points.
+ TryRule: TryRule
+ 
+ MultiPV: A function to check the top N candidate moves in that situation
+ NarrowBook: Do not adopt a book with a low realization probability
+ 
+// Param1: X-axis for automatic parameter adjustment
+// Param2: Y-axis for automatic parameter adjustment
+ 
+MinimumThinkingTime: Minimum thinking time. If you point within 2 seconds and the measurement is 1 second, 2000 should be specified. (CSA rules, etc.)
+ At this time, the amount of Network Delay is reduced and thinking, so the measurement should be 1 second.
+MaxMovesToDraw: The number of steps to the end. Set 256 for the 256-hand rule. 0 is unlimited.
+ // For safety, it is better to set it to about 258 for the 256-hand rule.
+ // Reason → Many shogi software have a bug in the implementation of the 256-hand rule: https://yaneuraou.yaneu.com/2021/01/13/incorrectly-implemented-the-256-moves-rule/
+ // → This bug itself has been fixed now, but as long as the substitution table is used, it is possible that the information of the situation where the 256-hand rule is involved and the draw is used before the 256th move.
+ 
+ BookMoves: Number of steps to use joseki (0 = unused)
+ For example, if 16 is specified, the joseki will be hit from the start phase to the 16th phase.
+ 
+PvInterval: Suppress PV output. The next PV is not output until this time (unit is [ms]) elapses from the previous output time.
+ 
+EvalShare: Expand the evaluation function to shared memory. See commentary.txt for details.
+ 
+ EvalSaveDir: Folder to save when using the learn command.
+ 
+ 
+ [Options related to joseki]
+ 
+USI_OwnBook: Do you want to enable the book on the thinking engine side? (True by default)
+ // The USI draft has this option, and it seems that it is supported by ShogiGUI and ShogiDroid.
+// Add this option. [2020/3/9]
+ 
+ BookFile Book File: Select a book file
+ 
+ # Value of this combo box
+ no_book No book
+ standard_book.db Standard book
+ yaneura_book1.db Yaneura Daijoseki (public concept proof)
+ yaneura_book2.db Super Yaneura Joseki (2015 for tournament)
+ yaneura_book3.db Shinyaneura Joseki (2016 for the tournament)
+ yaneura_book4.db Gokuyaneura Joseki (2017 for the tournament)
+ user_book1.db User book 1
+ user_book2.db User book 2
+ user_book3.db User book 3
+ 
+ BookDir: Folder where the book files are located
+ 
+Evaluation value-based book. When using the following options
+1) Be sure to turn off the Narrow Book. (In Yaneura Daijoseki, the "appearance frequency" is the version number of the thinking engine!
+ 　Therefore, it does not make sense to sort them in order of frequency of appearance. )
+ 2) Use a book with a proper evaluation value, such as "Yaneura Large Book" or "True Yaneura Book".
+ 
+ BookEvalDiff: Difference in evaluation value from the first candidate of the book
+ The difference in the evaluation value between the move of the first candidate and the move of the second and subsequent candidates in the joseki move is
+If it is within this range, it will be adopted. (Specify 0 if you only want the first candidate move to be selected)
+ 
+ BookEvalBlackLimit: Lower limit of evaluation value of the first move of the book
+ 
+The lower limit of the evaluation value for the first move among the joseki moves. Do not select a move whose evaluation value is lower than this.
+ 
+ BookEvalWhiteLimit: Lower limit of evaluation value after the book
+ 
+ Similarly, the lower limit of the back.
+ 
+ BookDepthLimit: Lower limit of depth of book
+ 
+If the depth of the move registered in the book is less than this, it will not be adopted. If 0 is specified, depth is ignored.
+ 
+ BookOnTheFly: A function that does not read the book file in memory
+ 
+ If a huge book such as Yaneura Daijoseki is loaded at the beginning of the game, it will take time to load it.
+Option to read the file every time you point during the game. The book must be pre-sorted.
+This can be done with the makebook sort command. See doc / commentary.txt for how to use the command.
+ In addition, the book files distributed on the official website of YaneuraOu are sorted.
+ 
+ Since the inside of the book file is searched by binary search, even a huge book with a file size of over 10GB can be handled.
+ SSD is preferable to HDD if this option is used because the access will be close to random access.
+ 
+ ConsiderBookMoveCount: Make the move of the joseki proportional to the acceptance rate of the joseki DB (YaneuraOu 2017 Early or later)
+ 
+BookIgnoreRate: Ignore joseki with a certain probability. (Make it not a hit)
+ You can specify a value from 0 to 100, for example, if you specify 30, there is a 30% chance that you will not hit the book.
+ 
+BookPvMoves: How many moves to display PV when hitting a book. If it is too long, it may take time to output PV.
+ (Especially when BookOnTheFly is effective with a huge book using HDD ...)
+ * This is because one move is actually advanced with the move of the joseki, and it is repeatedly judged whether or not the joseki is hit again.
+ At this time, ConsiderBookMoveCount = true, BookEvalDiff = 0, BookMoves = 0 BookDepthLimit = 0,
+ It is treated as BookEvalBlackLimit = -99999, BookEvalWhiteLimit = -99999.
+ 
+ IgnoreBookPly: Ignore the trouble on the book DB.
+ Example) If the phase diagram is the same, the 36th phase on the book will also hit the 40th phase.
+ 
+ 
+ResignValue: Resignation score. For example, if you set it to 3000, the evaluation value seen from the other party will be 3000 or more (-3000 or less from your own perspective).
+If it becomes, it will be dismissed. The default is 99999.
+ 
+ ConsiderationMode: "PV output for consideration mode"
+ It is intended for use in study modes such as ShogiGUI, and when this option is turned on
+ The output of half-finished reading lines is reduced.
+ 
+OutputFailLHPV: Whether to output PV when fail low / high. Also valid in Consideration Mode.
+ 
+ GenerateAllLegalMoves: Generate all legal moves in each aspect of reading
+ (Usually, the failure in the second step of the step does not generate the move itself, but due to this, the problem involving checkmate that requires failure cannot be solved.
+I have prepared this option because there is. If you turn it on, the winning percentage will drop a little, so it is off by default. )
+ 
+ Related) The lie that shogi software can't read unsuccessful: http://yaneuraou.yaneu.com/2020/12/12/all-legal-moves/
+ 
+EvalHash: Specify the size of EvalHash (memory that stores the calculated value of the evaluation function) in [MB] units. Must be a power of 2.
+* Default 128 [MB]. The bigger the better, the better the grade. For witches, 1024 [MB] for AVX2.
+ 
+ ThreadIdOffset: 
+ 
+ When the thinking engine is started at the same time on a CPU with multiple processor groups on Windows such as 3990X
+ Thread offset to avoid being assigned to the same processor group
+ It is possible to specify.
+ 
+ Example) If you have 128 threads, start 4 thinking engines and specify Threads = 32 for each,
+ Specify ThreadIdOffset = 0,32,64,96 for each thinking engine.
+ // (One processor group is created for every 64 logical cores. In the above case, ThreadIdOffset = 0,0,64,64 has the same meaning.)
+ 
+ * If you want to start multiple thinking engines on one PC at the same time and play a game, this should be set appropriately.
+ 
+ LargePageEnable: 
+ 
+Do you want to enable LargePage? True by default
+ 
+ If this cannot be disabled, only one engine may use LargePage during self-play,
+It would be unfair and needed a way to invalidate it. This option is disabled when set to false.
+ 
+ 
+ // At the time of cooperation solver
+ 
+ CM_Hash: Substitution table size at the time of cooperation packing (unit [MB])
+ 
+ 
+ // at local-game-server
+ 
+ EngineConfigDir: The folder where "engine_configX.txt" is located
+ 
+ EngineNuma: A processor group (Numa node) that runs an Engine in a child process.
+ If -1, not specified.
+ 
+ BookSfenFile: A sfen file for advancing to the regular stage during continuous self-competition.
+ Proceed to the 32nd move with the game record of this file.
+ book / book.sfen
+ Specify as.
+ 
+ DepthLimit: Limit search depth (0 = no limit)
+ NodesLimit: Limit the number of explored nodes (0 = no limit)
+ → I feel that these two should be specified as depth or node when the GUI side is a go command,
+ For the time being, the GUI side is not so, so I prepared it.
+ Nodes Limit does not stop exactly at that node and there are some errors.
+ 
+SkipLoadingEval: Skips the loading of the evaluation function. When it is not possible to prepare an evaluation function filled with zeros,
+ It is used to skip the reading of the evaluation function when a new type of evaluation function cannot be prepared.
+Used in combination with the "test eval convert" command. For details, refer to the explanation .txt.
+ 
+SkillLevel: For adjustment. If this value is 20, there is no adjustment. (Normal mode) If it is less than 20, manual adjustment is effective.
+0 is the weakest. (Weaker than R2000) Stockfish "Skill Level" is ported as it is.
+ 
+ 
+ // Yaneura Ou Tsume Shogi Engine (2020/12/29 release)
+ 
+ USI_Hash: Memory allocated to the Tsume Shogi engine [MB]
+ NodesLimit: Number of discovered nodes (0: Unlimited)
+ SolverType:
+ 32bitNodeSolver (The number of search nodes can only handle up to 4.2 billion, which can be expressed by 32bit, but the required memory is half that of 64bitNodeSolver)
+ 64bitNodeSolver (The number of search nodes can be expressed by 64bit, so it is practically unlimited, but the required memory is twice that of 32bitNodeSolver)
+ PvInterval: Reading line output interval (0: Do not output)
+ 
+ Example)
+ USI_Hash 4096 // 4096 [MB] Allocate
+ isready
+ sfen l2g5 / 2s3g2 / 3k1p2p / P2pp2P1 / 1pP4s1 / p1 + B6 / NP1P + nPS1P / K1G4 + p1 / L6NL b RBGNLPrs3p 1 // Phase diagram
+ go mate 10000 // Try to solve in 10 seconds
+ 
+ // ↓ info ~ outputs the reading line for each PvInterval, and finally checkmate XXX outputs the checkmate procedure.
+ // If it does not clog (it can be proved that it is not clogged), "checkmate no mate" is returned.
+ // When the time runs out, "checkmate timeout" is returned.
+ // "checkmate none" is returned when the number of search nodes cannot be solved or the memory for Tsume Shogi (specified by USI_Hash) reaches the limit.
+ // * Immediately before that, "info string Out Of Memory." (Out of memory) and "info string Exceeded Nodes Limit." (The number of searched nodes has been reached) are output.
+ 
+info time 1317 nodes 1781726 nps 1352867 hashfull 35 pv 7f8e 6c6b G * 5b 6a5b 8e5b 6b5b P * 5c 5b6c B * 7d 6c5c R * 5b 5c4d N * 3f 2e3f G * 3d 4d3d 5b3b + R * 3c P * 3d 3d 3c2b L * 2c 2b3a R * 4a 3a3b 4a2a + 3b4b 2a4a 4b5c 4a5b
+ checkmate 7f8e 6c6b G * 5b 6a5b 8e5b 6b5b P * 5c 5b6c B * 7d 6c5c R * 5b 5c4d N * 3f 2e3f G * 3d 4d3d 5b3b + R * 3c P * 3e 3d2d 3b3c 2d3c G * 3c 3a3b 4a2a + 3b4b 2a4a 4b5c 4a5b
+ 
+ 
+ 
+ // In the case of Fukaura Ou (dlshogi compatible engine)
+ 
+ -Check the explanation of the settings for dlshogi.
+ World Shogi AI Denryu Battle Version (included with "GCT Denryu")
+ https://github.com/TadaoYamaoka/DeepLearningShogi/releases/tag/denryu2020
+ 
+ -The options related to the book are the same as for the YaneuraOu normal search engine.
+・ The score at the time of a draw is the same as that of the YaneuraOu normal search engine. (However, it is specified in parts per mille)
+ 
+ Reuse Subtree
+ Flag to reuse the searched node at the next turn
+ 
+ Resign_Threshold: Resignation value: 1000%
+It will be dismissed when it falls below this value. If it is 0, it will not end until the end.
+ 
+ DNN_Model1 ~ 8
+ UCT_Threads1 ~ 8
+ DNN_Batch_Size1 ~ 8
+ 
+ The DNN model name (the name of the evaluation function file) for each GPU, the number of UCT search threads for that GPU, and
+How many aspects should the GPU be evaluated (inferred) at once? It can handle up to 8 GPUs.
+ 
+ DNN_Batch_Size1 to 8 are recommended 128 at normal times and 256 at the time of consideration.
+ 
+If DNN_Model2-8 is "" (nothing is set), the value of DNN_Model1 is adopted. (When the number of threads is set to 1 or more)
+For DNN_Batch_Size2-8, the value of DNN_Batch_Size1 is adopted when 0 is set. (When the number of threads is set to 1 or more)
+ Example) 
+ UCT_Threads2 = 8 ← Number of threads allocated to GPU2 is 8
+ DNN_Model2 = "" ← There is no model name for GPU2, but since threads are assigned with ↑, the model specified by DNN_Model1 is loaded for GPU2.
+ DNN_Batch_Size2 = 0 ← The batch size for GPU2 is 0, but since threads are assigned with ↑, the batch size for GPU2 is the same as the value of DNN_Batch_Size1.
+ 
+ Increasing DNN_Batch_Size will increase the time to wait for the return from the GPU, so it is easy to exceed the time.
+ In that case, adjust the values ​​of NetworkDelay and NetworkDelay2.
+ // I think that the optimum value for Network Delay is usually around 400.
+ 
+ DebugMessage
+ 
+ Whether to output a message for debugging.
+ 
+ Example)
+ When Debug Message is turned on, the following log is output.
+ > info string search search_end = 3600 [ms], interruption time = 3604 [ms]
+ > info nps 172 time 4257 nodes 735 hashfull 0 depth 4 score cp 176 pv 2g2f 8c8d 1g1f 1c1d
+ It was planned earlier to stop at 3600 [ms], and sent a stop signal to the search thread at 3604 [ms],
+However, all threads stopped at 4257 [ms]. At this time, there is a delay for stopping by 4257-3604 = 653 [ms].
+ (GPU is processing and cannot be stopped immediately) In this case, it is appropriate to set NetworDelay to about 653 + α = 800.
+For NetworkDelay2, add about 1 second (in the case of online competition), and about 1800 is appropriate. (← If it runs out, you lose immediately, so give a little margin)
+ If it's not an online match, I think a margin of about +500 is fine.
+ 
+ 
+ Softmax_Temperature
+Exploration Softmax temperature. Specify in parts per thousand.
+ // Note that the same option of dlshogi is specified in parts per 100, so there is a difference here.
+ Specifying 1740 means 1.740.
+ 
+ As described in the article below, it was 1.74 in the past, but if you learn from the teacher file in hcpe3 format
+ It seems that the optimum value is around 1.400 to 1.500.
+ 
+ Shogi AI lab notebook: Learning the distribution of strategies requires adjustment of search parameters
+ https://tadaoyamaoka.hatenablog.com/entry/2021/04/05/215431
+ 
+ 
+ UCT_NodeLimit
+ 
+ Memory is used in proportion to the number of Nodes examined when searching, but the limit on how many Nodes to create.
+ Memory proportional to this is required.
+ NodesLimit, unlike this, simply limits the number of nodes searched.
+ 
+ 
+ LeafDfpnNodesLimit
+ Upper limit of the number of nodes when calling the df-pn checkmate routine in leaf node (end phase of search).
+default 50. 50 is about 3 to 5 hands-on equivalent. Since it is checked on the CPU side, it puts a burden on the CPU.
+ 0 = Do not call.
+ 
+ RootMateSearchNodesLimit
+ Number of nodes (phases) to be examined when performing a checkmate search by df-pn at the root node (search start phase)
+If this is 0, the checkmate search is not performed. Checkmate search is performed up to the specified number of nodes.
+ The number specified here x 16 x 8 (that's about it considering the number of checkmate branches) bytes are consumed for checkmate search.
+ Example) If 1 million is specified, 128MB will be consumed.
+ I think that you can check about 1 to 2 million phases per second, so if you want to check for up to 3 seconds, set about 3 to 6 million.
+ // Default is 300,000
+ // If the checkmate can be proved, the checkmate search ends there.
+ // dlshogi defaults to 300 [ms] search, so it's probably about 300,000 nodes.
+ // Well, such a long checkmate, I don't come across it in actual battles, so 300 [ms] may be enough.
+ // More than that, the memory transfer bandwidth is consumed by accessing the substitution table, which interferes with UCT search.
+ 
+ 
+ ★ About the difference from dlshogi
+ 
+ // EvalDir → Although not supported by dlshogi, YaneuraOu will read the model file in EvalDir.
+ 
+// The following are also search parameters, so they are not needed. The idea that the development side should tune to the optimum value.
+ // C_fpu_reduction, C_fpu_reduction_root, C_init, C_base, C_init_root, C_base_root
+ 
+ 
+・ Getoption
+ 
+ 
+ How to use)
+ getoption [option name]
+ 
+USI original expansion. The opposite of setoption. Specify the option name and get its current value.
+ Option names ignore case.
+ If the option name is omitted, the current values ​​of all option items are output.
+ 
+ 
+■ Extension of go command
+ 
+ 
+ go depth 6
+ Thinking with depth specification.
+ 
+ go nodes 10000
+Thinking by specifying the number of search nodes. It's not very strict. (Since the interval for checking the number of search nodes is loose, it cannot be strictly adhered to)
+ 
+ Note)
+ Depth and nodes are present in the UCI protocol, which was the original draft of the USI protocol.
+Shogi is not supported. It should be supported by ShogiGUI.
+ 
+ go rtime 100
+ Then, as the thinking time this time, think using 100 to 300 [ms].
+ I prepared it because I thought that it would have the effect of breaking the move when measuring the rating in a self-play.
+ I'm not using it now.
+ 
+ go movetime 100
+One-handed time-fixed option. In this case, one move is 100 [ms].
+ Although the GUI side does not normally support it.
+ 
+perft [depth]: Performance test. From the current aspect (given by the position command) to depth depth
+Count the total number of nodes when proceeding with all legal hands. Specify a value of 1 or more as depth.
+ Used in combination with the position-go command.
+ Example)
+ perft 10
+ position startpos
+ go
+ 
+ 
+■ USI extended command
+ 
+ 
+ d: (debug d) Shows the current phase for debugging.
+ compiler: Shows the compiler information used for compilation.
+ eval: Calls the evaluation function for the current phase and outputs the evaluation value.
+ matsuri: Set the phase of the move generation festival as the current phase.
+ moves: Outputs all legal moves (LEGAL_ALL) of the current phase.
+ side: Returns the turn of the current phase (first move = "black", second move = "white")
+sfen: Abbreviation for "position sfen". Useful when copying and pasting the sfen string displayed by the "d" command.
+ key: Output the hash key of the phase for the current phase
+wait: Wait for the search to end with the "go" command. (Since "stop" is not sent, wait for the time to finish the search)
+ // Useful when sending commands from the command line.　
+sleep: Used when you want to wait for a certain period of time before "quit". The waiting time is specified in [ms] units. Example) sleep 1000 == Wait 1 second
+mated: Call checkmate for the current phase. If it is clogged 1. Otherwise 0.
+ mate1: Call mate1ply () for the current phase.
+ matedebug: MateEngine debug command: Efficient analysis for specific changes in Tsume Shogi.
+ cf. https://github.com/yaneurao/YaneuraOu/pull/115
+ qsearch: Call Learner :: qsearch () directly for the current phase to display the evaluation value and reading line.
+ (For debugging, only executable files compiled with EVAL_LEARN enabled can be used.)
+ search: Call Learner :: search () directly for the current phase to display the evaluation value and reading line.
+ (For debugging, only executable files compiled with EVAL_LEARN enabled can be used.)
+ 
+log: Setting to write standard input / output to log file ("io_log.txt"). You can also turn it on / off with Write Debug Log.
+ 
+ bench: Benchmark
+ bench [Replacement table size] [Number of threads] [Specify →] [LimitType = depth, nodes, time] [Specify phase]
+ Example)
+ bench 1024 1 10 default depth
+ * If parameters are omitted, the above settings
+ 
+ About [Designation of phase]
+ "default" = default phase, "current" = current phase,
+ Other = Read the sfen file as a file name
+ * The contents of the file are the list on the right side of "position" of the position command.
+ Example)
+ sfen XXX
+ startpos
+ startpos moves XXX XXX ...
+ 
+ Example) 1024MB USI_Hash, 1 thread, default phase, search at depth 10
+ bench 1024 1 10 default depth
+ 
+ Example) 1024MB USI_Hash, 1 thread, default phase, search up to 100,000 nodes
+bench 1024 1 100000 default nodes
+ 
+ From V6.04, you can also specify the name of the argument.
+ Example)
+bench 1024 4 3000 default nodes
+ ↓ You can write like this
+ benchmark hash 1024 threads 4 limit 3000 type nodes file sfen.txt
+ Example)
+ Only specific arguments can be changed.
+ 
+ benchmark type nodes limit 3000
+ // Search by 3000 nodes
+ 
+ 
+■ Test command
+ 
+ test: Test command
+ * The test command is an experimentally implemented command and may disappear suddenly.
+ 
+ // ----------------------------
+ // Normal test command
+ // ----------------------------
+ 
+ test genmoves:
+ Perform a move generation speed test.
+ EVASIONS when the check is on, NON_EVASIONS when not
+ 
+ loop X: Number of repetitions X
+ 
+ Example)
+ isready
+ position sfen l6nl / 5 + P1gk / 2np1S3 / p1p4Pp / 3P2Sp1 / 1PPb2P1P / P5GS1 / R8 / LN4bKL w GR5pnsg 1
+ test genmoves
+ // The position command can only be used after is ready, so put is ready and then use the position command.
+ // Send and then run test genmoves.
+ 
+ // A result like ↓ is returned.
+ sfen l6nl / 5 + P1gk / 2np1S3 / p1p4Pp / 3P2Sp1 / 1PPb2P1P / P5GS1 / R8 / LN4bKL w RGgsn5p 1
+1d1e 2e2f 6c6d 7d7e 9d9e 9a9b 9a9c 2a1c 2a3c 7c6e 7c8e 3i1g + 3i2h + 3i4h + 3i5g + 6f4h + 6f5g + 6f7g + 6f8h + 6f9i + 6f3c 6f4d 6f5e 6f7e 6f8d 6f9c 1b1c 1b2c 2b1c 2b2c 2b3b 2b3c P * 3a P * 3b P * 3c P * 3d P * 3h P * 4a P * 4d P * 4e P * 4f P * 4g P * 4h P * 5a P * 5b P * 5c P * 5d P * 5e P * 5f P * 5g P * 5h P * 8a P * 8b P * 8c P * 8d P * 8e P * 8g P * 8h S * 4i G * 4i S * 5i G * 5i S * 6i G * 6i S * 7i G * 7i S * 1h G * 1h S * 2h G * 2h S * 3h G * 3h S * 4h G * 4h S * 5h G * 5h S * 6h G * 6h S * 7h G * 7h S * 8h G * 8h N * 1c S * 1c G * 1c N * 1e S * 1e G * 1e N * 1g S * 1g G * 1g N * 2c S * 2c G * 2c N * 2f S * 2f G * 2f N * 3a S * 3a G * 3a N * 3b S * 3b G * 3b N * 3c S * 3c G * 3c N * 3d S * 3d G * 3d N * 4a S * 4a G * 4a N * 4d S * 4d G * 4d N * 4e S * 4e G * 4e N * 4f S * 4f G * 4f N * 4g S * 4g G * 4g N * 5a S * 5a G * 5a N * 5b S * 5b G * 5b N * 5c S * 5c G * 5c N * 5d S * 5d G * 5d N * 5e S * 5e G * 5e N * 5f S * 5f G * 5f N * 5g S * 5g G * 5g N * 6a S * 6a G * 6a N * 6b S * 6b G * 6b N * 6d S * 6d G * 6d N * 6g S * 6g G * 6g N * 7a S * 7a G * 7a N * 7b S * 7b G * 7b N * 7e S * 7e G * 7e N * 7g S * 7g G * 7g N * 8aS * 8a G * 8a N * 8b S * 8b G * 8b N * 8c S * 8c G * 8c N * 8d S * 8d G * 8d N * 8e S * 8e G * 8e N * 8g S * 8g G * 8g N * 9b S * 9b G * 9b N * 9c S * 9c G * 9c N * 9e S * 9e G * 9e N * 9f S * 9f G * 9f
+ 2957121 times per second.
+ 
+ 
+ test autoplay: Self-play test command
+ It is used when checking if there is a bug in the search unit or move generation.
+ // If you set ASSERT_LV 5 etc., compile it, and play it continuously, if there is a bug in search or move generation
+ // The idea of ​​getting caught in ASSERT somewhere.
+ 
+ loop X: Number of consecutive self-plays X
+movetime N: The thinking time per move becomes N [ms]. default 100 [ms]
+verbose: Detailed output. Output the game record in the format of "position start pos moves ...".
+ 
+ 
+ // ----------------------------
+ // Checkmate related test commands
+ // ----------------------------
+ 
+ test genmate: Automatic generation of Tsume Shogi (LEARN version of YaneuraOu Normal Search Department only)
+ 
+ It plays a self-game and outputs the aspect of the tsume shogi found during the game in sfen format.
+ // Since it is a self-play, the evaluation function must be read normally and the engine must be operating normally.
+ 
+ loop X: The number to be generated is X.
+ min_ply n: Minimum number of steps to generate Tsume Shogi n (make it odd)
+ max_ply m: Maximum number of tsume shogi to generate m (make it odd)
+ filename file name: file name to generate (sfen format)
+ 
+ Example) test genmate loop 10000 min_ply 5 max_ply 7 filename mate.sfen
+ Then, a 5 or 7 hand tsume shogi will be output in sfen format for 10,000 phases.
+ // This command displays the number of phases generated every 5 seconds.
+ 
+ Since threads are generated in parallel, the number of Threads of the engine option at that time is generated in parallel.
+ Example) // If you want to generate with 8 threads, do as follows.
+ Threads 8
+ test genmate loop 10000 min_ply 5 max_ply 7 filename mate.sfen
+ 
+ 
+ test matebench: Take a bench about the checkmate routine.
+ 
+ For this bench, it is good to use the checkmate phase generated by the "test genmate" command.
+ 
+ file file name: File name where the sfen character string of Tsume Shogi is written
+ num Number of questions: Number of questions to read from the file (read only this number of lines from the beginning)
+ loop X: Solve the problem X times at a time.
+ Since the time to set the position from the sfen string is lost,
+ It is used when the same aspect is solved repeatedly several times.
+ 
+ mate_ply N: The upper limit of checkmate steps when calling an odd-numbered checkmate routine.
+dfpn_mem M: How much memory to allocate for the df-pn routine. M [MB].
+ 
+verbose: Increase the output. When there is a stalemate, the sfen character string at that time is output.
+ 
+ mode M: M 1: Bench odd-numbered, 2: df-pn Routine bench.
+ Specifying 1 + 2 = 3 will do both benches.
+ 
+Example) test matebench file mate / mate.sfen num 1000000
+ Read the mate / mate.sfen file from the beginning for 1 million phases and bench.
+ 
+ 
+ test matebench2: tanuki-Benchmark test of Tsume Shogi routine
+ // The explanation is omitted because it may be deleted soon.
+ 
+ 
+ test dfpn: Call the df-pn Tsume Shogi routine for the current phase
+ 
+ // This command cannot be used because the df-pn routine itself is currently being adjusted and is private.
+ 
+ If it can be solved, the number of nodes searched at that time and the reading line are returned.
+ 
+ nodes: Limit on the number of search nodes
+ mem: Memory for df-pn [MB]
+ 
+ The current phase is set with the "position" command or the "sfen" command.
+ You must have sent the "is ready" command before the position command.
+ 
+ Example) The situation specified by sfen can be solved by the df-pn Tsume Shogi routine.
+ 
+ isready
+ sfen ln6 + P / 2sk1G3 / p1ppn2pp / 5BP2 / 9 / 2N6 / P1PPPP2P / 1SG6 / LN1KR + r3 w 2G2L5Pb2s 72
+ test dfpn
+ 
+ 
+ 
+■ Tsume shogi engine
+ 
+ 
+・ Go mate X
+ X = search time [ms]
+ 
+ * In UCI, depth is specified here, but in USI, search time is specified.
+ 
+ When there is no time limit
+ go mate infinite
+ Write.
+ 
+・ Go nodes X mate infinite
+ 
+ X = node limit
+* It's like Nodes Limit. USI 2.0 extension.
+ Below mate, you can also specify the search time instead of infinite.
+ 
+・ Go depth X mate infinite
+ 
+ X = Search depth limit
+* Something like Depth Limit. USI 2.0 extension.
+ → This is not implemented at this time [2018/11/12]
+ 
+ 
+■ Joseki generation
+ 
+ 
+ // Valid only when compiling with define MAKE_BOOK_CMD and EVAL_LEARN.
+ // Can be used with the LEARN version of NNUE.
+makebook: Command to create a book. For details, refer to doc / Explanation.txt.
+ 
+ 
+■ Evaluation function learning related
+ 
+ 
+・ Generation of teacher phase used in learning evaluation function
+ 
+ // YaneuraOu LEARN version only
+ 
+ gensfen [depth search depth] [loop Number of game records to generate] [output_file_name file name] [eval_limit evaluation value]: Generation of self-playing game records for learning
+ Example) gensfen depth 6 (the rest can be omitted)
+ eval_limit is a value that ends the game when the absolute value of the evaluation value exceeds this value.
+ 
+ Other options that can be specified
+ 
+ write_minply N:
+ Since there are only similar phases around the initial phase, the phases less than N hands counted from the initial phase are not written out as teacher phases.
+ The default is 16.
+ If you want to write out the initial phase, specify 1 for N.
+ write_maxply N:
+Maximum number of steps from the initial phase of the writing phase. If this number of steps is exceeded, it will be treated as a draw.
+ The default is 400.
+ 
+ random_move_minply, random_move_maxply and random_move_count options
+ The minimum and maximum number of moves to perform a random move when the teacher phase is generated, and the number of times to perform a random move in one station
+ By default, random_move_minply = 16, random_move_maxply = 32, random_move_count = 5.
+ // Meaning to perform 5 random moves from the 16th move to the 24th move
+ gensfen random_move_maxply 16 random_move_maxply 32 random_move_count 5 ...
+ Specify as.
+ 
+ As a special designation
+ If you specify -1 for random_move_minply,
+ Point according to the book until you pass through the book, and then immediately after passing through the book
+ The behavior is to perform random_move_count random moves.
+ 
+ random_move_like_apery N: Increases the probability of a move to move a ball during a random move.
+ For example, if N = 3 is specified, the ball will be moved with a probability of 1/3.
+ (And at this time, after moving the ball, there is a 1/2 chance that the opponent's turn will also have a random move.)
+If you do not want to move the ball, normally select one from the legal moves. (Including the move to move the ball)
+ Specifying 0 for this option disables this feature.
+ 
+ random_multi_pv N: Random_move_count option with MultiPV N instead of random move.
+ If you combine it with ConsiderBookMoveCount = true, you may be able to start from a phase with a high probability of realization.
+ If 0 is specified, this function is disabled.
+ random_multi_pv_diff m: When adopting a move with multi pv with random_multi pv
+ Only moves within the range where the difference between the evaluation value of the first move and the evaluation value is within m are adopted.
+The default is 32000. (No limit on range)
+random_multi_pv_depth: Search depth when doing random_multipv. If not specified, the depth specified by gensfen.
+ 
+ use_eval_hash b: A function to save the evaluation value in case the same situation is encountered.
+ If this is turned on, the evaluation value of the wrong aspect will be used when a hash collision occurs, so
+Recommended to turn it off. However, if you take a large eval_limit, such as 32000,
+ Even if the evaluation value is wrong, it will be overwritten in a new phase, so the effect is minor, so it may be better to turn it on.
+ (Because if you do not turn it on, the generation of the phase may be delayed by about 20%)
+To turn it on, specify 1 in place of b, such as use_eval_hash 1. Specify 0 to turn it off.
+ 
+ save_every m: File split save option.
+ Saves the teacher aspect to a file every time m is written out.
+ Measures to terminate the AWS spot instance.
+m specifies a multiple of 10,000. Fractions are ignored.
+ 
+ random_file_name b: Option to randomize the generated filename
+ Valid if you specify random_file_name 1.
+Invalid when random_file_name 0 is specified. Default, disabled.
+ If this option is enabled, it will combine a random number with the filename specified by output_file_name.
+ Example) output_sfen_2549869
+ Furthermore, when combined with the save_every option
+ Example) output_sfen_2549869, output_sfen_2549869_1, output_sfen_2549869_2, ..
+ It is saved with a serial number like.
+ * When you want to hit the gensfen command with the startup script when launching multiple instances on AWS
+ I want each instance to have a different output file name.
+ 
+ 
+・ Learning the evaluation function from the teacher aspect
+ 
+ learn [Teacher game record file name 1] [Teacher game record file name 2]…: Learn the evaluation function parameters from the generated game record.
+ 
+ You can write as many teacher game record file names as you like.
+ Specify the file generated by the gensfen command.
+ If you do not specify this file, you need to specify the folder containing the teacher game record with the following targetdir option.
+ 
+ bat option
+ You can set the size of the mini batch like learn bat 200 [filename 1] [filename 2] ..
+ If it is 200, the evaluation function parameters are updated every 2 million phases.
+ basedir option
+ learn basedir c: / kif [filename1] [filename2] .. like c: / kif / filename1 c: / kif/filename2
+ It has the same effect as I wrote.
+ targetdir option
+ learn targetdir c: / kif
+ Then, the files in the c: / kif folder are uprooted and learned.
+ loop option
+ learn loop 3 [filename 1] [filename 2] .. will loop 3 times.
+ (If you specify a large number for omission implementation, it will consume a lot of character string buffer of the file name, so please specify up to about 1000)
+ batchsize option
+You can specify the size of the mini batch. The default is 1 million phases.
+ eval_limit option
+ If the absolute value of the evaluation value in the deep search of the teacher phase exceeds this value, the phase is discarded.
+ If not specified, 32000 shall be specified.
+ save_only_once option
+ A flag that prevents the folder from being dug each time the merit function is saved.
+ Off by default.
+ no_shuffle
+ Do not shuffle with look-ahead when reading.
+ If this is not specified, it will be read while shuffling every 10 million phases.
+ (Off by default)
+ lambda elmo (WCSC27) lambda when the expression is in internal division format.
+ To make it the same as elmo (WCSC27), specify 0.33.
+ reference)
+ grad = (1 --lambda) * (eval_winrate --t) + lambda * (eval_winrate --teacher_winrate);
+ lambda2, lambda_limit
+ When the absolute value of the evaluation value of deep search is lambda_limit or more, lambda2 is applied instead of lambda.
+ By default, lambda_limit = 32000, so lambda2 is never applied.
+ 
+ freeze_kk bool: freeze_kk bool: 
+ freeze_kkp bool: 
+ freeze_kpp bool:
+ 
+Of KK, KKP, KPP, the option not to learn KK / KKP / KPP. If set to true, the feature factor will not be learned.
+To turn it on, specify 1 like freeze_kpp 1. Specify 0 to turn it off.
+ 
+ Also, in the case of an evaluation function with KKPP such as KKPP_KPPT, an option called freeze_kkpp can be used.
+ Similarly, for merit functions with KPPP such as KPPP_KPPT, the option freeze_kppp is available.
+ 
+ eta learning rate
+Set the learning rate of AdaGrad. 30.0 is the standard learning rate.
+ Increasing this will increase the amount of change at one time when the parameter is updated.
+ (It doesn't mean that it should be big)
+ You may specify eta1 instead of eta.
+ If 0 is specified, the default value (30.0) will be used.
+ 
+ To change eta continuously
+ eta1 0.01 eta2 500 eta1_epoch 100 eta3 30 eta2_epoch 500
+ Specify as.
+ 
+ In this case, eta starts at 0.01 and gradually increases to epoch 100 to 500 at epoch 100.
+After that, it gradually decreases to 30 with epoch 500. After that, it remains at 30.
+ If eta1_epoch and eta2_epoch are not specified, such a function will be turned off.
+ For example, if you do not specify eta2_epoch, eta3 is ignored.
+ 
+ 
+ The folder to save is the folder specified by "EvalSaveDir".
+The default is "evalsave". This folder shall be prepared in advance.
+ The folder is automatically dug under this folder like "0 /", "1 /", ... and the evaluation function file is saved there.
+ When save_only_once is specified, folders such as "0 /" and "1 /" are not dug.
+ 
+・ Conversion of teacher phase
+ 
+ cf. http://qhapaq.hatenablog.com/entry/2017/12/25/002820
+ 
+ Brief explanation) "Binary format" is a normal teacher phase format.
+ "Text format" is a teacher phase format written in text (sfen or something).
+ You can see the detailed format by looking at convert_plain () in learn.cpp.
+ 
+ learn convert_bin output_file_name [output file name] [input file name 1] [input file name 2]
+ Reads the text format teacher aspect specified by the input file name 1, 2, ... and puts it in the file with the output file name.
+ Output in binary format.
+ 
+ learn convert_plain output_file_name [output file name] [input file name 1] [input file name 2]
+ Reads the binary format teacher aspect specified by the input file name 1, 2, ... and puts it in the file with the output file name.
+ Output in text format.
+ 
+ 
+・ Shuffle the teacher phase
+ 
+ 
+ learn shuffle basedir BASE_DIR targetdir TARGET_DIR output_file_name OUTPUT_FILE_NAME [Teacher's score file name 1] [Teacher's score file name 2] ...
+ 
+ basedir BASE_DIR, targetdir TARGET_DIR and output_file_name OUTPUT_FILE_NAME can be omitted.
+The teacher game record file name can also be omitted. It is assumed that the teacher game record file is generated by the gensfen command.
+ 
+ Similar to the command when not shuffle, when the teacher game record file is not specified, the teacher phase file is set with targetdir.
+ It is necessary to specify the folder that contains it.
+ 
+ You can omit the targetdir and list the file names after that.
+ tmp /
+ A temporary file is written to the folder called, and finally
+ OUTPUT_FILE_NAME
+ File is written out.
+ output_file_name When OUTPUT_FILE_NAME is omitted
+ shuffled_sfen.bin
+ It is written to the current folder with the file name.
+ 
+ buffer_size BUFFER_SIZE
+ When shuffling, the temporary file is once written to the tmp / folder for each buffer_size phase.
+ For example, if buffer_size = 20000000 (20M), you need a buffer of 20M * 40bytes = 800MB.
+ For PCs with low memory, I think it's a good idea to reduce this.
+ However, if the number of files increases too much, it will not be possible to open at the same time due to OS restrictions.
+ In Windows, there should have been a restriction of 512 per process, so 500 can be opened here,
+ With the current settings, the limit is 500 files x 20M = 10G = 10 billion phases.
+ 
+ learn shufflem basedir BASE_DIR targetdir TARGET_DIR output_file_name OUTPUT_FILE_NAME [Teacher's score file name 1] [Teacher's score file name 2] ...
+ Read the whole file in memory, shuffle it, and write it out with the specified file name.
+ (Memory is required about twice as much as the teacher phase)
+ Others are the same as the learn shuffle command.
+ 
+ learn shuffleq basedir BASE_DIR targetdir TARGET_DIR output_file_name OUTPUT_FILE_NAME [Teacher's score file name 1] [Teacher's score file name 2] ...
+Assuming that each teacher phase is shuffled on a file-by-file basis, shuffle with 1pass. high speed.
+ Others are the same as learn shuffle.
+ 
+ When generating a teacher phase on multiple PCs, each PC is supposed to be "learn shufflem" immediately after generation.
+ It is supposed to be used for learning after "learn shuffleq" on the host side.
