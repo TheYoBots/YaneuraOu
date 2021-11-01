@@ -1,5 +1,4 @@
 # About this project
-
 WebAssembly port of the strong shogi engine YaneuraOu.
 This project is based on the following repository.
 
